@@ -1,0 +1,203 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>010-9791-1540</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>내연기관차 vs 전기차 비교</h1>
+            <h1>Developed by G37</h1>
+            <p>내연기관차와 배터리 전기차의 다양한 거리에서 누적 CO₂ 배출량을 비교합니다</p>
+        </header>
+
+        <main>
+            <form id="comparison-form">
+                <!-- Common Controls -->
+                <section class="common-controls">
+                    <fieldset>
+                        <legend>시뮬레이션 매개변수</legend>
+                        <div class="form-group">
+                            <label for="distances">시뮬레이션 거리 (km):</label>
+                            <input type="text" id="distances" name="distances" 
+                                   value="0,20000,40000,60000,100000" 
+                                   placeholder="0,20000,40000,60000,100000">
+                            <small>킬로미터 단위의 거리를 쉼표로 구분하여 입력</small>
+                        </div>
+                    </fieldset>
+
+                    <details class="advanced-controls">
+                        <summary>고급 매개변수</summary>
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label for="alpha-fuel">α_fuel (kgCO₂e/L):</label>
+                                <input type="number" id="alpha-fuel" name="alpha-fuel" 
+                                       value="2.7" step="0.1" min="0">
+                            </div>
+                            <div class="form-group">
+                                <label for="alpha-grid">α_grid (kgCO₂e/kWh):</label>
+                                <input type="number" id="alpha-grid" name="alpha-grid" 
+                                       value="0.45" step="0.01" min="0">
+                            </div>
+                        </div>
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label for="phi-grid">φ_grid (MJ/kWh):</label>
+                                <input type="number" id="phi-grid" name="phi-grid" 
+                                       value="8.5" step="0.1" min="0">
+                                <small>1차 에너지 계수 (표시 전용)</small>
+                            </div>
+                            <div class="form-group">
+                                <label for="alpha-bat-per-kwh">α_bat_per_kWh (kgCO₂e/kWh):</label>
+                                <input type="number" id="alpha-bat-per-kwh" name="alpha-bat-per-kwh" 
+                                       value="80" step="1" min="0">
+                            </div>
+                        </div>
+                    </details>
+                </section>
+
+                <!-- Vehicle Input Cards -->
+                <div class="vehicle-cards">
+                    <!-- ICE Card -->
+                    <div class="vehicle-card ice-card">
+                        <h2>내연기관차 (ICE)</h2>
+                        <fieldset>
+                            <legend>차량 사양</legend>
+                            <div class="form-group">
+                                <label for="ice-weight">공차중량 (kg):</label>
+                                <input type="number" id="ice-weight" name="ice-weight" 
+                                       value="1750" step="1" min="0" required>
+                            </div>
+                            <div class="form-group">
+                                <label for="ice-fuel-economy">연비 (L/100 km):</label>
+                                <input type="number" id="ice-fuel-economy" name="ice-fuel-economy" 
+                                       step="0.1" min="0">
+                                <small>선택사항 - 비어있으면 중량에서 자동 추정</small>
+                            </div>
+                            <div class="form-group">
+                                <label for="ice-manufacturing">제조 CO₂ (kgCO₂e):</label>
+                                <input type="number" id="ice-manufacturing" name="ice-manufacturing" 
+                                       step="1" min="0">
+                                <small>선택사항 - 비어있으면 중량에서 자동 추정</small>
+                            </div>
+                        </fieldset>
+                    </div>
+
+                    <!-- BEV Card -->
+                    <div class="vehicle-card bev-card">
+                        <h2>배터리 전기차 (BEV)</h2>
+                        <fieldset>
+                            <legend>차량 사양</legend>
+                            <div class="form-group">
+                                <label for="bev-weight">공차중량 (kg):</label>
+                                <input type="number" id="bev-weight" name="bev-weight" 
+                                       value="1900" step="1" min="0" required>
+                            </div>
+                            <div class="form-group">
+                                <label for="bev-energy-use">에너지 사용량 (kWh/100 km):</label>
+                                <input type="number" id="bev-energy-use" name="bev-energy-use" 
+                                       step="0.1" min="0">
+                                <small>선택사항 - 비어있으면 중량에서 자동 추정</small>
+                            </div>
+                            <div class="form-group">
+                                <label for="bev-battery-capacity">배터리 용량 (kWh):</label>
+                                <input type="number" id="bev-battery-capacity" name="bev-battery-capacity" 
+                                       step="1" min="0">
+                                <small>선택사항 - 비어있으면 중량에서 자동 추정</small>
+                            </div>
+                            <div class="form-group">
+                                <label for="bev-manufacturing">제조 CO₂ (kgCO₂e):</label>
+                                <input type="number" id="bev-manufacturing" name="bev-manufacturing" 
+                                       step="1" min="0">
+                                <small>선택사항 - 비어있으면 중량에서 자동 추정</small>
+                            </div>
+                        </fieldset>
+                    </div>
+                </div>
+
+                <!-- Action Buttons -->
+                <div class="action-buttons">
+                    <button type="button" id="compute-btn" class="btn btn-primary">계산</button>
+                    <button type="button" id="reset-btn" class="btn btn-secondary">초기화</button>
+                    <button type="button" id="download-csv-btn" class="btn btn-secondary">CSV 다운로드</button>
+                    <button type="button" id="copy-url-btn" class="btn btn-secondary">공유 URL 복사</button>
+                </div>
+            </form>
+
+            <!-- Results Section -->
+            <section id="results" class="results-section" style="display: none;">
+                <!-- Key Metrics -->
+                <div class="key-metrics">
+                    <h2>주요 지표</h2>
+                    <div class="metrics-grid">
+                        <div class="metric-card">
+                            <h3>km당 배출강도</h3>
+                            <div class="metric-value">
+                                <span class="label">k_ICE:</span>
+                                <span id="k-ice-value">-</span> kgCO₂e/km
+                            </div>
+                            <div class="metric-value">
+                                <span class="label">k_BEV:</span>
+                                <span id="k-bev-value">-</span> kgCO₂e/km
+                            </div>
+                        </div>
+                        <div class="metric-card">
+                            <h3>제조 배출량 차이</h3>
+                            <div class="metric-value">
+                                <span class="label">ΔE_manuf:</span>
+                                <span id="delta-manuf-value">-</span> kgCO₂e
+                            </div>
+                        </div>
+                        <div class="metric-card">
+                            <h3>손익분기점 거리</h3>
+                            <div class="metric-value">
+                                <span id="break-even-message">-</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Derived Values Display -->
+                <div class="derived-values">
+                    <h3>추정된 값</h3>
+                    <div id="derived-values-content"></div>
+                </div>
+
+                <!-- Results Table -->
+                <div class="results-table-container">
+                    <h3>결과 표</h3>
+                    <div class="table-wrapper">
+                        <table id="results-table">
+                            <thead>
+                                <tr>
+                                    <th>거리 (km)</th>
+                                    <th>E_ICE(d) (kgCO₂e)</th>
+                                    <th>E_BEV(d) (kgCO₂e)</th>
+                                    <th>Δ (BEV - ICE) (kgCO₂e)</th>
+                                    <th>k_ICE (kgCO₂e/km)</th>
+                                    <th>k_BEV (kgCO₂e/km)</th>
+                                    <th>PE_BEV(d) (MJ)</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <!-- Table rows will be populated by JavaScript -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <!-- Chart -->
+                <div class="chart-container">
+                    <h3>배출량 비교 차트</h3>
+                    <canvas id="emissions-chart" width="800" height="400"></canvas>
+                </div>
+            </section>
+        </main>
+    </div>
+
+    <script src="app.js"></script>
+</body>
+</html>
