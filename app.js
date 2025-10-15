@@ -8,6 +8,7 @@
  * - ICE 누적: E_ICE(d) = E_manuf,veh^ICE + d × (ℓ/100) × α_fuel
  * - BEV 누적: E_BEV(d) = (E_manuf,veh^BEV + α_bat) + d × (e/100) × α_grid
  * - km당 배출강도: k_ICE = (ℓ/100) × α_fuel, k_BEV = (e/100) × α_grid
+ * - (수정) k_ICE = (1/연비) x 30.1(1L 당 발열량) x 19.731(탄소배출계수) / 1000000 x 44/12(탄소->이산화탄소)
  * - 손익분기점: d* = ((E_manuf,veh^BEV + α_bat) − E_manuf,veh^ICE) / (k_ICE − k_BEV)
  */
 
@@ -29,9 +30,9 @@ const canvas = document.getElementById('emissions-chart');
  */
 const EstimationHeuristics = {
     /**
-     * 제조 CO₂ (배터리 제외 차량): E_manuf_veh ≈ 4.5 × 공차중량_kg
+     * 제조 CO₂ (배터리 제외 차량): E_manuf_veh ≈ 1.46 × 공차중량_kg (전로 생산방식 이산화탄소 배출 계수 1.46CO2t/t)
      */
-    estimateManufacturingCO2: (weight) => 4.5 * weight,
+    estimateManufacturingCO2: (weight) => 1.46 * weight,
     
     /**
      * ICE 연비: ℓ ≈ 3.5 + 2.5 × (공차중량_kg / 1000)
@@ -100,7 +101,7 @@ const InputParser = {
             const distances = InputParser.parseDistances(formData.get('distances'));
             
             // 공통 매개변수
-            const alphaFuel = InputParser.parseNumber(formData.get('alpha-fuel'), 'α_fuel') || 2.7;
+            const alphaFuel = InputParser.parseNumber(formData.get('alpha-fuel'), 'α_fuel') || 2.18;
             const alphaGrid = InputParser.parseNumber(formData.get('alpha-grid'), 'α_grid') || 0.45;
             const phiGrid = InputParser.parseNumber(formData.get('phi-grid'), 'φ_grid') || 8.5;
             const alphaBatPerKwh = InputParser.parseNumber(formData.get('alpha-bat-per-kwh'), 'α_bat_per_kWh') || 80;
@@ -179,8 +180,8 @@ const Calculator = {
         const iceFuelEconomy = inputs.iceFuelEconomy ?? derived.iceFuelEconomy;
         const bevEnergyUse = inputs.bevEnergyUse ?? derived.bevEnergyUse;
         
-        const kICE = (iceFuelEconomy / 100) * inputs.alphaFuel;
-        const kBEV = (bevEnergyUse / 100) * inputs.alphaGrid;
+        const kICE = (1 / iceFuelEconomy) * inputs.alphaFuel;
+        const kBEV = (1 / bevEnergyUse) * inputs.alphaGrid;
         
         return { kICE, kBEV };
     },
