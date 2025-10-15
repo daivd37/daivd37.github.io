@@ -104,7 +104,7 @@ const InputParser = {
             const alphaFuel = InputParser.parseNumber(formData.get('alpha-fuel'), 'α_fuel') || 2.18;
             const alphaGrid = InputParser.parseNumber(formData.get('alpha-grid'), 'α_grid') || 0.45;
             const phiGrid = InputParser.parseNumber(formData.get('phi-grid'), 'φ_grid') || 8.5;
-            const alphaBatPerKwh = InputParser.parseNumber(formData.get('alpha-bat-per-kwh'), 'α_bat_per_kWh') || 80;
+            const alphaBatPerKwh = InputParser.parseNumber(formData.get('alpha-bat-per-kwh'), 'α_bat_per_kWh') || 177;
             
             // ICE 매개변수
             const iceWeight = InputParser.parseNumber(formData.get('ice-weight'), 'ICE 중량');
@@ -188,6 +188,7 @@ const Calculator = {
     
     /**
      * 손익분기점 거리 계산
+     alphaBat - 배터리를 제조할 때 발생하는 이산화탄소 발생량(문헌 참고 약 177kg/kwh)
      */
     calculateBreakEven: (inputs, derived, kICE, kBEV) => {
         const iceManufacturing = inputs.iceManufacturing ?? derived.iceManufacturing;
